@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Jhalissita ❤️</title>
+    <!-- Librería para el PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --paper-bg: #151c2c;
+            --accent-gold: #d4af37;
+            --accent-red: #e11d48;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(225, 29, 72, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(212, 175, 55, 0.1) 0px, transparent 50%);
+            color: var(--text-main);
+            min-height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* SOBRE INICIAL */
+        #fase-sobre {
+            text-align: center;
+            max-width: 450px;
+            width: 100%;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        #fase-sobre:hover {
+            transform: translateY(-5px);
+        }
+
+        .envelope-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            display: inline-block;
+            filter: drop-shadow(0 10px 15px rgba(225, 29, 72, 0.3));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .envelope-title {
+            font-size: 1.8rem;
+            color: var(--accent-gold);
+            font-weight: 600;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+
+        .envelope-subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* CONTENEDOR DE CARTA LIMPIA */
+        #fase-carta {
+            display: none;
+            max-width: 680px;
+            width: 100%;
+            background: var(--paper-bg);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            border-radius: 16px;
+            padding: 40px 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            animation: fadeIn 1s ease forwards;
+            position: relative;
+        }
+
+        /* REPRODUCTOR DISCRETO */
+        .player-bar {
+            background: rgba(11, 15, 25, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .song-details {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: var(--accent-gold);
+        }
+
+        .play-btn {
+            background: transparent;
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .play-btn:hover {
+            background: var(--accent-gold);
+            color: var(--bg-color);
+        }
+
+        /* CONTADOR DE TIEMPO */
+        .timer-container {
+            background: rgba(225, 29, 72, 0.1);
+            border: 1px dashed var(--accent-red);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .timer-title {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .timer-grid {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .timer-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .timer-num {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+        }
+
+        .timer-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* TEXTO DE LA CARTA */
+        .carta-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .carta-header h1 {
+            font-size: 2.2rem;
+            color: var(--accent-gold);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .carta-header span {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .carta-cuerpo {
+            font-size: 1.05rem;
+            line-height: 1.9;
+            color: #e2e8f0;
+            text-align: justify;
+        }
+
+        .carta-cuerpo p {
+            margin-bottom: 20px;
+            text-indent: 20px;
+        }
+
+        .carta-firma {
+            margin-top: 30px;
+            text-align: right;
+            font-style: italic;
+            color: var(--accent-gold);
+            font-size: 1.1rem;
+        }
+
+        /* BOTÓN DE GUARDAR PDF */
+        .save-container {
+            text-align: center;
+            margin-top: 35px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, var(--accent-gold), #b8860b);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .save-btn:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 480px) {
+            #fase-carta { padding: 25px 20px; }
+            .carta-cuerpo { font-size: 0.98rem; text-align: left; }
+            .timer-grid { gap: 8px; }
+            .timer-num { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- AUDIO: Feliz me siento -->
+    <audio id="musica" loop>
+        <source src="feliz-me-siento" type="audio/mpeg">
+        <source src="feliz-me-siento.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- FASE 1: SOBRE DE PRESENTACIÓN -->
+    <div id="fase-sobre" onclick="abrirCarta()">
+        <div class="envelope-icon">✉️</div>
+        <div class="envelope-title">Un Año de Nuestra Historia</div>
+        <div class="envelope-subtitle">Toca aquí para abrir la carta</div>
+    </div>
+
+    <!-- FASE 2: CARTA EXTENSA Y LIMPIA -->
+    <div id="fase-carta">
+        
+        <div class="player-bar">
+            <div class="song-details">
+                <span>🎷</span>
+                <span>Guanda Merced y su Salsa Fecer - Feliz me siento</span>
+            </div>
+            <button class="play-btn" id="btn-audio" onclick="toggleMusica()">Pausar</button>
+        </div>
+
+        <!-- CONTADOR EN TIEMPO REAL -->
+        <div class="timer-container">
+            <div class="timer-title">Tiempo compartido juntos ❤️</div>
+            <div class="timer-grid">
+                <div class="timer-box"><span class="timer-num" id="dias">00</span><span class="timer-label">Días</span></div>
+                <div class="timer-box"><span class="timer-num" id="horas">00</span><span class="timer-label">Horas</span></div>
+                <div class="timer-box"><span class="timer-num" id="minutos">00</span><span class="timer-label">Min</span></div>
+                <div class="timer-box"><span class="timer-num" id="segundos">00</span><span class="timer-label">Seg</span></div>
+            </div>
+        </div>
+
+        <div id="contenido-imprimir">
+            <div class="carta-header">
+                <span>365 Días Juntos</span>
+                <h1>Feliz Aniversario, Jhalissita</h1>
+            </div>
+
+            <div class="carta-cuerpo">
+                <p>
+                    Hoy se cumple un año exacto desde que nuestras vidas tomaron un rumbo distinto y decidimos caminar juntos. Parece increíble lo rápido que ha avanzado el tiempo cuando miro hacia atrás y me doy cuenta de todo lo que hemos construido día con día. Lo que comenzó como una amistad sincera, con conversaciones sencillas y risas espontáneas, fue transformándose gradualmente en el sentimiento más bonito y sólido que tengo hoy en mi vida.
+                </p>
+                <p>
+                    A lo largo de este año he aprendido a conocerte verdaderamente, a valorar tu forma de ser, tu esencia y la manera en que logras iluminar mi entorno con solo estar presente. Gracias por tu paciencia, por tu cariño incondicional, por cada palabra de apoyo en los momentos difíciles y por compartir conmigo tus alegrías. No hay un solo día en el que no me sienta agradecido por haber coincidido contigo.
+                </p>
+                <p>
+                    Quería plasmar estas líneas de una forma distinta, limpia y sincera, porque lo que siento no necesita adornos ni grandes artificios para ser real. Esta carta guardada en un código representa la huella de este primer capítulo de nuestra historia, una historia que valoro enormemente y que cuido con el alma.
+                </p>
+                <p>
+                    Gracias por este año inolvidable de amor, complicidad y aprendizaje. Espero de corazón que este sea solo el primero de muchos aniversarios más que celebremos juntos.
+                </p>
+            </div>
+
+            <div class="carta-firma">
+                Con todo mi cariño,<br>
+                <strong>César</strong> ❤️
+            </div>
+        </div>
+
+        <!-- BOTÓN CON TU FRASE PERSONALIZADA -->
+        <div class="save-container">
+            <button class="save-btn" onclick="descargarPDF()">✨ Por si lo quieres guardar mi vida ✨</button>
+        </div>
+
+    </div>
+
+    <script>
+        const audio = document.getElementById('musica');
+
+        function abrirCarta() {
+            audio.play().catch(() => console.log("Audio listo"));
+            document.getElementById('fase-sobre').style.display = 'none';
+            document.getElementById('fase-carta').style.display = 'block';
+            iniciarContador();
+        }
+
+        function toggleMusica() {
+            const btn = document.getElementById('btn-audio');
+            if (audio.paused) {
+                audio.play();
+                btn.innerText = 'Pausar';
+            } else {
+                audio.pause();
+                btn.innerText = 'Reproducir';
+            }
+        }
+
+        // CONTADOR DE TIEMPO REAL (Desde el 28 de Septiembre)
+        function iniciarContador() {
+            // Fecha de inicio: 28 de Septiembre 2025
+            const fechaInicio = new Date('2025-09-28T00:00:00');
+
+            function actualizar() {
+                const ahora = new Date();
+                const diferencia = ahora - fechaInicio;
+
+                const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+                const horas = Math.floor((diferencia / (1000 * 60 * 60)) % 24);
+                const minutos = Math.floor((diferencia / 1000 / 60) % 60);
+                const segundos = Math.floor((diferencia / 1000) % 60);
+
+                document.getElementById('dias').innerText = dias < 10 ? '0' + dias : dias;
+                document.getElementById('horas').innerText = horas < 10 ? '0' + horas : horas;
+                document.getElementById('minutos').innerText = minutos < 10 ? '0' + minutos : minutos;
+                document.getElementById('segundos').innerText = segundos < 10 ? '0' + segundos : segundos;
+            }
+
+            actualizar();
+            setInterval(actualizar, 1000);
+        }
+
+        // DESCARGAR CARTA EN PDF
+        function descargarPDF() {
+            const elemento = document.getElementById('contenido-imprimir');
+            const opciones = {
+                margin:       10,
+                filename:     'Carta_Aniversario_Jhalissita.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opciones).from(elemento).save();
+        }
+    </script>
+</body>
+</html>
